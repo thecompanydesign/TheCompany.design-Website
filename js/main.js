@@ -196,11 +196,29 @@
     }
   }
 
+  // pageshow fires once per navigation, but notably LATER in the load
+  // lifecycle than the synchronous scrollRestoration/scrollTo calls at the
+  // very top of this file (which run before body content even parses) —
+  // it fires right after the 'load' event, i.e. once every resource
+  // (images included) has finished. That makes it a useful *additional*
+  // checkpoint: some mobile browsers apply their own native "restore
+  // scroll position" behavior on a plain reload (distinct from bfcache,
+  // and not fully suppressed by scrollRestoration='manual' in practice on
+  // some engines) late enough to land after our earlier corrections. So
+  // the scroll-to-top reset below runs on every pageshow unconditionally,
+  // not just persisted ones.
+  // event.persisted specifically flags a bfcache restore (back/forward
+  // navigation resumed from an in-memory snapshot with no script
+  // re-execution — reload does not use bfcache, so persisted is normally
+  // false there) — only that case also needs the *full* welcome-sequence
+  // reset+replay; a plain reload/fresh nav is already correctly running
+  // the sequence via the normal script flow, so re-triggering it here too
+  // would restart/interrupt an in-progress sequence rather than fix it.
   window.addEventListener('pageshow', function (event) {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     if (event.persisted) {
       resetWelcomeState();
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       runWelcome();
     }
   });
