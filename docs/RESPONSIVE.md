@@ -57,8 +57,8 @@ Implement these as real `@media (max-width: 700px)` rules (in the prototype they
   footer row monospace 9px.
 
 **Mobile bottom CTA bar** (mobile only)
-- Fixed bottom, `padding: 17px 22px`, appears after the hero, retires at the final CTA,
-  hidden while the menu is open.
+- Fixed bottom, `padding: 22px 22px 26px` (extra bottom padding for breathing room against the
+  device edge), appears after the hero, retires at the final CTA, hidden while the menu is open.
 
 **Hero**
 - `h1` → `font-size: 16.5vw`, `line-height: 0.9`; line 2 indent → `padding-left: 8vw`.
@@ -75,7 +75,7 @@ Implement these as real `@media (max-width: 700px)` rules (in the prototype they
   border-top: 1px solid rgba(237,233,226,.14); padding-top: 16px; font-size: 11px`.
 - Image → `object-position: 62% 45%`; **parallax cleared to `none`** (static crop; this removed
   the scroll jitter — do not re-enable).
-- Work counter → `left: 22px; bottom: 74px` (clears the CTA bar).
+- Work counter → `left: 22px; bottom: 88px` (clears the taller CTA bar).
 
 **Approach**
 - Section → `min-height: 108svh; padding: 100px 22px`.

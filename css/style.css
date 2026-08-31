@@ -517,7 +517,7 @@ button {
   display: none;
   align-items: center;
   justify-content: space-between;
-  padding: 17px 22px;
+  padding: 22px 22px 26px;
   background: rgba(11, 11, 12, .82);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
@@ -1034,7 +1034,7 @@ body.is-hero-ready .hero-meta { opacity: 1; }
   .mobile-cta-bar { display: flex; }
 
   /* Work counter */
-  .work-counter { left: 22px; bottom: 74px; }
+  .work-counter { left: 22px; bottom: 88px; }
 
   /* Hero */
   .hero-h1 { font-size: 16.5vw; line-height: .9; }

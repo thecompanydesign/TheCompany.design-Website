@@ -87,7 +87,7 @@ Four sibling `<a href="#work">` covers, each:
 | 04 | Msingi | Design systems | Concept | One vocabulary for a growing product team. | Concept study | `#131313` | 12vw | `uploads/Capabilities.png` |
 
 - **Fixed counter** (`[data-workindex]`): `position: fixed; left: clamp(18px,4vw,56px); bottom: 30px`
-  (mobile `left: 22px; bottom: 74px`), monospace 10px, accent index + `/ 04 — Work`.
+  (mobile `left: 22px; bottom: 88px`), monospace 10px, accent index + `/ 04 — Work`.
   Opacity 1 only while a cover crosses the viewport midpoint.
 
 ## 03 — Approach  (`#approach`, label "03 Approach")
