@@ -286,6 +286,26 @@ button {
   letter-spacing: -.03em;
   line-height: 1;
   white-space: nowrap;
+  /*
+   * The wordmark is much wider than the card stack it's centered on top
+   * of, so a large stretch of it necessarily crosses the busy card photos.
+   * A static ink color can't guarantee contrast there — light letter
+   * strokes wash out over the images' own light regions (monitor/window
+   * highlights etc), reading as if the card is "covering" the text even
+   * though it's correctly painted on top (verified via elementsFromPoint —
+   * this was a legibility issue, not a stacking bug).
+   * The reference site solves this with mix-blend-mode:difference on this
+   * row; tried that here first, but difference blending against detailed,
+   * highly-varied photographic content (rather than the reference's likely
+   * more uniform backdrops) produced noisy, unpredictable results instead
+   * of reliable contrast — checked live and it didn't read as clearly
+   * better. A tuned text-shadow halo is more predictable here: it darkens
+   * the area immediately around every glyph regardless of the specific
+   * backdrop pixel underneath, so it holds up against local bright spots
+   * (a monitor screen, a window) the way a single blend-mode calculation
+   * can't guarantee.
+   */
+  text-shadow: 0 0 4px rgba(10, 10, 11, .95), 0 0 14px rgba(10, 10, 11, .95), 0 0 34px rgba(10, 10, 11, .85), 0 2px 6px rgba(10, 10, 11, .9);
 }
 .wordmark-mask { display: inline-flex; overflow: hidden; }
 .wordmark-letter {

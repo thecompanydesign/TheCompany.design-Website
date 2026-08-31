@@ -10,12 +10,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Archivo:wght@300;400;500&display=swap" rel="stylesheet">
 
-<!-- Preload the five welcome-pile frames so the opening sequence never stalls on first paint -->
-<link rel="preload" as="image" href="uploads/Studio.png">
-<link rel="preload" as="image" href="uploads/Capabilities.png">
-<link rel="preload" as="image" href="uploads/Final%20CTA.png">
-<link rel="preload" as="image" href="uploads/Transformation.png">
-<link rel="preload" as="image" href="uploads/Work.png">
+<!-- Preload the five welcome-pile frames so the opening sequence never stalls on
+     first paint. Dedicated small WebP copies (uploads/welcome/*.webp, ~480px wide,
+     ~13-18KB each — the cards only ever render at ~196px CSS width) rather than
+     the full uploads/*.png originals (~1536px, ~2MB each — needed for the
+     full-bleed work-cover sections elsewhere on the page, but wildly oversized
+     for this ~200px preloader use and the main reason the animation was slow
+     to start: ~9.7MB had to land before it could show real imagery). -->
+<link rel="preload" as="image" href="uploads/welcome/Studio.webp">
+<link rel="preload" as="image" href="uploads/welcome/Capabilities.webp">
+<link rel="preload" as="image" href="uploads/welcome/Final%20CTA.webp">
+<link rel="preload" as="image" href="uploads/welcome/Transformation.webp">
+<link rel="preload" as="image" href="uploads/welcome/Work.webp">
 
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -25,19 +31,19 @@
 <div class="welcome" id="welcome" aria-hidden="true">
   <div class="welcome-stack" id="welcomeStack">
     <div class="welcome-frame wf1" id="wf1">
-      <img src="uploads/Studio.png" alt="" loading="eager">
+      <img src="uploads/welcome/Studio.webp" alt="" loading="eager">
     </div>
     <div class="welcome-frame wf2" id="wf2">
-      <img src="uploads/Capabilities.png" alt="" loading="eager">
+      <img src="uploads/welcome/Capabilities.webp" alt="" loading="eager">
     </div>
     <div class="welcome-frame wf3" id="wf3">
-      <img src="uploads/Final%20CTA.png" alt="" loading="eager">
+      <img src="uploads/welcome/Final%20CTA.webp" alt="" loading="eager">
     </div>
     <div class="welcome-frame wf4" id="wf4">
-      <img src="uploads/Transformation.png" alt="" loading="eager">
+      <img src="uploads/welcome/Transformation.webp" alt="" loading="eager">
     </div>
     <div class="welcome-frame wf5" id="wf5">
-      <img src="uploads/Work.png" alt="" loading="eager">
+      <img src="uploads/welcome/Work.webp" alt="" loading="eager">
     </div>
   </div>
   <div class="welcome-wordmark" id="welcomeWordmark" aria-hidden="true">
