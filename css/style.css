@@ -367,18 +367,14 @@ button {
 
 .wordmark {
   display: inline-flex;
-  align-items: baseline;
-  gap: 3px;
-  font-family: 'Bodoni Moda', serif;
-  font-size: 16px;
-  letter-spacing: .01em;
+  align-items: center;
 }
-.wordmark-suffix {
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 8.5px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(237, 233, 226, .5);
+/* uploads/thecompany-design-logo.png is 735x216 (~3.4:1); height-constrained
+   so it scales down for the tighter mobile nav-pill below. */
+.wordmark img {
+  display: block;
+  height: 34px;
+  width: auto;
 }
 
 .nav-links {
@@ -1013,6 +1009,7 @@ body.is-hero-ready .hero-meta { opacity: 1; }
   .site-header { padding: 12px 14px; }
   .nav-pill { padding: 7px 14px; align-items: center; }
   .wordmark { padding: 0; align-items: center; }
+  .wordmark img { height: 26px; }
   .nav-links, .cta-pill--nav { display: none; }
   .menu-button { display: flex; }
 
