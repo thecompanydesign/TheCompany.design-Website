@@ -369,8 +369,9 @@ button {
   display: inline-flex;
   align-items: center;
 }
-/* uploads/thecompany-design-logo.png is 735x216 (~3.4:1); height-constrained
-   so it scales down for the tighter mobile nav-pill below. */
+/* uploads/thecompany-design-logo.png is the icon-only mark, 344x281
+   (~1.22:1); height-constrained so it scales down for the tighter mobile
+   nav-pill below. */
 .wordmark img {
   display: block;
   height: 34px;
