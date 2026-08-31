@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TheCompany.design</title>
+<meta name="description" content="TheCompany.design — a studio for websites, digital products and experiences.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Archivo:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- Preload the five welcome-pile frames so the opening sequence never stalls on first paint -->
+<link rel="preload" as="image" href="uploads/Studio.png">
+<link rel="preload" as="image" href="uploads/Capabilities.png">
+<link rel="preload" as="image" href="uploads/Final%20CTA.png">
+<link rel="preload" as="image" href="uploads/Transformation.png">
+<link rel="preload" as="image" href="uploads/Work.png">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Welcome / preloader overlay — plays once per page load, gates the hero entrance -->
+<div class="welcome" id="welcome" aria-hidden="true">
+  <div class="welcome-stack" id="welcomeStack">
+    <div class="welcome-frame wf1" id="wf1">
+      <img src="uploads/Studio.png" alt="" loading="eager">
+    </div>
+    <div class="welcome-frame wf2" id="wf2">
+      <img src="uploads/Capabilities.png" alt="" loading="eager">
+    </div>
+    <div class="welcome-frame wf3" id="wf3">
+      <img src="uploads/Final%20CTA.png" alt="" loading="eager">
+    </div>
+    <div class="welcome-frame wf4" id="wf4">
+      <img src="uploads/Transformation.png" alt="" loading="eager">
+    </div>
+    <div class="welcome-frame wf5" id="wf5">
+      <img src="uploads/Work.png" alt="" loading="eager">
+    </div>
+  </div>
+  <div class="welcome-wordmark" id="welcomeWordmark" aria-hidden="true">
+    <span class="wordmark-mask" id="welcomeWordmarkMask"><span class="wordmark-letter">t</span><span class="wordmark-letter">h</span><span class="wordmark-letter">e</span><span class="wordmark-letter">c</span><span class="wordmark-letter">o</span><span class="wordmark-letter">m</span><span class="wordmark-letter">p</span><span class="wordmark-letter">a</span><span class="wordmark-letter">n</span><span class="wordmark-letter">y</span><span class="wordmark-letter accent">.</span><span class="wordmark-letter accent">d</span><span class="wordmark-letter accent">e</span><span class="wordmark-letter accent">s</span><span class="wordmark-letter accent">i</span><span class="wordmark-letter accent">g</span><span class="wordmark-letter accent">n</span></span>
+  </div>
+</div>
+
+<!-- Grain layer — fixed, decorative, z-60 -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- Custom cursor — desktop pointer only, disabled on touch / reduced motion via JS -->
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"><span class="cursor-label">View</span></div>
+
+<!-- Site header / nav pill — fixed, always pinned, z-52 -->
+<header class="site-header" id="siteHeader">
+  <div class="nav-pill" id="navPill">
+    <a href="#top" class="wordmark">TheCompany<span class="wordmark-suffix">.design</span></a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#work">Work</a>
+      <a href="#capabilities">Services</a>
+      <a href="#studio">Studio</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="cta-pill cta-pill--nav" href="mailto:thecompany.designhq@gmail.com">Start a project <span class="arrow">&rarr;</span></a>
+    <button type="button" class="menu-button" id="menuButton" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span class="bar bar-1"></span>
+      <span class="bar bar-2"></span>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile full-screen menu — ≤700px only, z-51 -->
+<div class="mobile-menu" id="mobileMenu">
+  <nav class="mobile-menu-links" aria-label="Mobile">
+    <a href="#work">Work</a>
+    <a href="#capabilities">Services</a>
+    <a href="#studio">Studio</a>
+    <a href="#contact" class="accent-italic">Contact</a>
+  </nav>
+  <div class="mobile-menu-footer">
+    <span>Nairobi &middot; GMT+3</span>
+    <span>thecompany.designhq@gmail.com</span>
+  </div>
+</div>
+
+<!-- Mobile bottom CTA bar — ≤700px only, z-48 -->
+<a class="mobile-cta-bar" id="mobileCtaBar" href="mailto:thecompany.designhq@gmail.com">
+  <span>Start a project</span>
+  <span class="arrow">&rarr;</span>
+</a>
+
+<!-- Work counter — fixed bottom-left, z-45, decorative -->
+<div class="work-counter" id="workCounter" aria-hidden="true">
+  <span class="work-counter-index" id="workCounterIndex">01</span>
+  <span class="work-counter-total">/ 04 &mdash; Work</span>
+</div>
+
+<main>
+
+  <!-- 01 Hero -->
+  <section id="top" class="hero">
+    <div class="hero-backdrop" data-hero-img>
+      <div class="hero-glow"></div>
+      <div class="hero-scrim hero-scrim-a"></div>
+      <div class="hero-scrim hero-scrim-b"></div>
+      <div class="coord-label" data-tall-only>01&deg;17&prime;S 36&deg;49&prime;E &mdash; Nairobi</div>
+    </div>
+    <div class="hero-type" data-hero-type>
+      <h1 class="hero-h1">
+        <span class="mask"><span class="rise" style="transition-delay:.25s">Impossible</span></span>
+        <span class="mask hero-line2"><span class="rise" style="transition-delay:.38s">to <em>ignore</em>.</span></span>
+      </h1>
+      <div class="hero-meta">
+        <div class="hero-meta-left">Websites, products, systems</div>
+        <div class="hero-meta-right">
+          <span class="scroll-rail"><span class="rail-bar"></span></span>
+          <span>Scroll</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Work -->
+  <section id="work" class="work" aria-label="Work">
+
+    <a href="#work" class="work-cover" data-cover data-index="1" data-cursor="view" aria-label="Mkopo &mdash; Lending, Nairobi">
+      <div class="work-cover-img" data-shot style="background:#121215">
+        <img src="uploads/Transformation.png" alt="" loading="lazy" data-parallax-img>
+      </div>
+      <div class="work-cover-scrim"></div>
+      <div class="work-cover-content">
+        <div class="work-meta">
+          <span class="work-meta-left">01 &mdash; Lending &middot; Nairobi</span>
+          <span class="work-meta-right">Concept</span>
+        </div>
+        <div class="work-title-mask">
+          <h2 class="work-title" style="--indent:0">Mkopo</h2>
+        </div>
+        <div class="work-bottom">
+          <p class="work-line" data-reveal-line>Credit that explains itself before it asks.</p>
+          <span class="work-tag" data-reveal-tag>Concept study <span class="arrow">&rarr;</span></span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#work" class="work-cover" data-cover data-index="2" data-cursor="view" aria-label="Sokoni &mdash; Wholesale commerce">
+      <div class="work-cover-img" data-shot style="background:#14100E">
+        <img src="uploads/Work.png" alt="" loading="lazy" data-parallax-img>
+      </div>
+      <div class="work-cover-scrim"></div>
+      <div class="work-cover-content">
+        <div class="work-meta">
+          <span class="work-meta-left">02 &mdash; Wholesale commerce</span>
+          <span class="work-meta-right">Concept</span>
+        </div>
+        <div class="work-title-mask">
+          <h2 class="work-title" style="--indent:8vw">Sokoni</h2>
+        </div>
+        <div class="work-bottom">
+          <p class="work-line" data-reveal-line>Stock, credit and delivery in one screen.</p>
+          <span class="work-tag" data-reveal-tag>Concept study <span class="arrow">&rarr;</span></span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#work" class="work-cover" data-cover data-index="3" data-cursor="view" aria-label="Afya &mdash; Health product">
+      <div class="work-cover-img" data-shot style="background:#0F1214">
+        <img src="uploads/Studio.png" alt="" loading="lazy" data-parallax-img>
+      </div>
+      <div class="work-cover-scrim"></div>
+      <div class="work-cover-content">
+        <div class="work-meta">
+          <span class="work-meta-left">03 &mdash; Health product</span>
+          <span class="work-meta-right">Concept</span>
+        </div>
+        <div class="work-title-mask">
+          <h2 class="work-title" style="--indent:4vw">Afya</h2>
+        </div>
+        <div class="work-bottom">
+          <p class="work-line" data-reveal-line>A clinic queue, rebuilt for a phone.</p>
+          <span class="work-tag" data-reveal-tag>Concept study <span class="arrow">&rarr;</span></span>
+        </div>
+      </div>
+    </a>
+
+    <a href="#work" class="work-cover" data-cover data-index="4" data-cursor="view" aria-label="Msingi &mdash; Design systems">
+      <div class="work-cover-img" data-shot style="background:#131313">
+        <img src="uploads/Capabilities.png" alt="" loading="lazy" data-parallax-img>
+      </div>
+      <div class="work-cover-scrim"></div>
+      <div class="work-cover-content">
+        <div class="work-meta">
+          <span class="work-meta-left">04 &mdash; Design systems</span>
+          <span class="work-meta-right">Concept</span>
+        </div>
+        <div class="work-title-mask">
+          <h2 class="work-title" style="--indent:12vw">Msingi</h2>
+        </div>
+        <div class="work-bottom">
+          <p class="work-line" data-reveal-line>One vocabulary for a growing product team.</p>
+          <span class="work-tag" data-reveal-tag>Concept study <span class="arrow">&rarr;</span></span>
+        </div>
+      </div>
+    </a>
+
+  </section>
+
+  <!-- 03 Approach -->
+  <section id="approach" class="approach">
+    <p class="approach-sentence" data-approach-sentence>
+      <span class="aw">Beautiful</span> <span class="aw">is</span> <span class="aw">the</span> <span class="aw">minimum.</span> <span class="aw accent-italic">Inevitable</span> <span class="aw">is</span> <span class="aw">the</span> <span class="aw">work.</span>
+    </p>
+    <span class="eyebrow approach-eyebrow">03 &mdash; Approach</span>
+  </section>
+
+  <!-- 04 Capabilities -->
+  <section id="capabilities" class="capabilities">
+    <div class="capabilities-inner">
+      <span class="eyebrow">04 &mdash; Capabilities</span>
+      <div class="capability-list" id="capabilityList">
+        <div class="capability-row-wrap" data-reveal-row>
+          <button type="button" class="capability-row" data-capability-row>
+            <span class="capability-pair">
+              <span class="capability-num">01</span>
+              <span class="capability-name">Strategy</span>
+            </span>
+            <span class="capability-line">What deserves to exist.</span>
+          </button>
+        </div>
+        <div class="capability-row-wrap" data-reveal-row>
+          <button type="button" class="capability-row" data-capability-row>
+            <span class="capability-pair">
+              <span class="capability-num">02</span>
+              <span class="capability-name">Experience</span>
+            </span>
+            <span class="capability-line">Where attention goes.</span>
+          </button>
+        </div>
+        <div class="capability-row-wrap" data-reveal-row>
+          <button type="button" class="capability-row" data-capability-row>
+            <span class="capability-pair">
+              <span class="capability-num">03</span>
+              <span class="capability-name">Interface</span>
+            </span>
+            <span class="capability-line">Every state, every network.</span>
+          </button>
+        </div>
+        <div class="capability-row-wrap" data-reveal-row>
+          <button type="button" class="capability-row" data-capability-row>
+            <span class="capability-pair">
+              <span class="capability-num">04</span>
+              <span class="capability-name">Product</span>
+            </span>
+            <span class="capability-line">Shipped, then sharpened.</span>
+          </button>
+        </div>
+        <div class="capability-row-wrap" data-reveal-row>
+          <button type="button" class="capability-row" data-capability-row>
+            <span class="capability-pair">
+              <span class="capability-num">05</span>
+              <span class="capability-name">Systems</span>
+            </span>
+            <span class="capability-line">Built to outlive us.</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Studio -->
+  <section id="studio" class="studio">
+    <div class="studio-inner" data-reveal-studio>
+      <span class="eyebrow">05 &mdash; Studio</span>
+      <p class="studio-statement">World-class digital design, <em class="accent-italic">built from Nairobi.</em></p>
+      <div class="studio-divider">
+        <span>Studio &mdash; Kilimani, Nairobi</span>
+        <span>Working across East Africa</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 Final CTA + Footer -->
+  <section id="contact" class="final-cta">
+    <div class="final-cta-glow"></div>
+    <h2 class="final-cta-h2" data-reveal-final>
+      <span class="final-line">Let&rsquo;s</span>
+      <span class="final-line final-line-2 accent-italic">begin.</span>
+    </h2>
+    <div class="final-cta-row">
+      <a class="cta-pill cta-pill--final" href="mailto:thecompany.designhq@gmail.com" data-cursor="hide" data-magnetic>Start a project <span class="arrow">&rarr;</span></a>
+      <a class="final-cta-email" href="mailto:thecompany.designhq@gmail.com">thecompany.designhq@gmail.com</a>
+    </div>
+    <footer class="site-footer">
+      <span>TheCompany.design</span>
+      <span>Nairobi, Kenya &middot; GMT+3</span>
+      <span>&copy; 2026</span>
+    </footer>
+  </section>
+
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>
