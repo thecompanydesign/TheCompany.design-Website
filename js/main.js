@@ -42,36 +42,35 @@
       letter.style.transitionDelay = (position * letterStagger).toFixed(3) + 's';
     });
 
-    // Card entrance/exit timing+stagger matches the reference GSAP timeline
-    // (see css/style.css comment above .welcome-frame for the source values).
+    // Card entrance/exit timing+stagger is adapted from the reference GSAP
+    // timeline (see css/style.css comment above .welcome-frame for the
+    // source values), sped up ~13% (1.5s->1.3s entrance, 1.1s->.95s exit,
+    // stagger and start tightened to match) per a request to make the card
+    // motion feel slightly faster once the earlier stutter (clip-path, see
+    // the same CSS comment) was fixed.
     // wordmark/exitStart/exit/remove are this project's own schedule, tuned
-    // so phases overlap on the way in (wordmark starts at 1500, before the
-    // last card even finishes entering at 800+1500=2300 — continuous motion,
-    // not a stop-then-start) but never on the way out: exitStart is set
-    // *after* the last wordmark letter finishes rising (1500 + 16*.035s
-    // stagger + 1.2s duration = 3260) plus a ~240ms hold, so the completed
-    // wordmark gets a beat to register before anything starts collapsing —
-    // previously exitStart (2800) fired while letters were still rising
-    // (finishing as late as 3760), cutting the reveal off mid-motion.
+    // so phases overlap on the way in (wordmark starts before the last card
+    // even finishes entering — continuous motion, not a stop-then-start)
+    // but never on the way out. All downstream numbers below were
+    // recomputed from the new card durations to preserve that guarantee:
+    //   last card entrance finishes: 180 + 4*130 + 1300 = 2000
+    //   wordmark trigger: 1300 (leaves the same ~35%-of-entrance overlap
+    //     with the card tail as before)
+    //   wordmark fully risen: 1300 + 16*.035s stagger + 1.2s duration = 3060
+    //   cardExitStart: 3300 (3060 + ~240ms hold, so the completed wordmark
+    //     gets a beat before anything collapses)
+    //   cards finish exiting: 3300 + 4*70 + 950 = 4530
+    //   wordmarkExit: 3400 (100ms after cardExitStart, matching the
+    //     reference's card-exit/letter-exit gap)
+    //   letters finish exiting: 3400 + 16*.04s stagger + .9s duration = 4940
+    //   exit/gate: 5000 (max(4530, 4940) + a small buffer — firing any
+    //     earlier bleeds still-animating fragments into the hero, per an
+    //     earlier fix; letters also fade to opacity:0 as a second guarantee)
+    //   remove: 5550 (exit + the overlay's own .5s fade + buffer)
     // Reduced-motion values are the same schedule at a uniform 0.2x.
-    // wordmarkExit starts 100ms after exitStart (matches the reference's own
-    // 2.8s card-exit / 2.9s letter-exit gap), so the wordmark disappears in
-    // sync with, immediately following, the cards collapsing.
-    // exit/gate (the overlay's own opacity fade, and the hero's reveal gate)
-    // must not fire until every card AND every letter has fully finished its
-    // exit motion — cards finish by exitStart + 320 + 1100 = 4920, letters by
-    // wordmarkExit + 640 + 900 = 5140 — plus a minimal buffer (letters also
-    // now fade to opacity:0 as a second guarantee, so this doesn't need much
-    // margin). Firing it any earlier (once 4600, briefly 540ms too soon)
-    // starts fading the overlay to transparent while letters/cards are
-    // still mid-motion, so their still-visible fragments bleed into the
-    // hero as it simultaneously reveals underneath. The overlay's own fade
-    // duration is kept short (.5s, see style.css) since by this point
-    // there's nothing left to hide — a longer fade only delayed how soon
-    // the hero (already animating underneath) becomes visible.
     var timeline = reduceMotion
-      ? { entranceStart: 40, entranceStagger: 30, wordmark: 300, exitStart: 700, wordmarkExit: 720, exitStagger: 16, exit: 1030, remove: 1140, gate: 1030 }
-      : { entranceStart: 200, entranceStagger: 150, wordmark: 1500, exitStart: 3500, wordmarkExit: 3600, exitStagger: 80, exit: 5150, remove: 5700, gate: 5150 };
+      ? { entranceStart: 36, entranceStagger: 26, wordmark: 260, exitStart: 660, wordmarkExit: 680, exitStagger: 14, exit: 1000, remove: 1110, gate: 1000 }
+      : { entranceStart: 180, entranceStagger: 130, wordmark: 1300, exitStart: 3300, wordmarkExit: 3400, exitStagger: 70, exit: 5000, remove: 5550, gate: 5000 };
 
     frames.forEach(function (frame, i) {
       setTimeout(function () { frame.classList.add('is-in'); }, timeline.entranceStart + i * timeline.entranceStagger);

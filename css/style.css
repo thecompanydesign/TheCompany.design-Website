@@ -186,15 +186,29 @@ button {
  *       clipPath:'inset(50% round 16px)', opacity:0, duration:1.1,
  *       ease:'power4.inOut', stagger:{each:.08, from:'end'}}, 2.8)
  * So each card doesn't sit flat-and-visible before fanning — it grows,
- * fades in, un-clips and rotates to its fan angle all at once, staggered
- * .15s apart, so several cards are mid-transition (translucent, at
- * different sizes/angles) together rather than a single opaque stack
- * that then rotates open.
+ * fades in and rotates to its fan angle all at once, staggered .15s apart
+ * (now 1.3s/.13s, see below), so several cards are mid-transition
+ * (translucent, at different sizes/angles) together rather than a single
+ * opaque stack that then rotates open.
  * power4 in GSAP is quintic, approximated below with the standard
  * easeOutQuint / easeInOutQuint cubic-bezier curves (an exact quintic
  * curve isn't expressible as a single CSS cubic-bezier). Reference uses
  * 6 cards at roughly 5° steps (-12… 12); adapted to our 5 frames at
  * 5° steps (-10… 10) to keep the same symmetric-fan feel.
+ *
+ * Deliberate deviation from the source: the reference also animates
+ * clipPath (inset(45%→0%) in, inset(0%→50%) out) alongside scale/opacity/
+ * rotation. clip-path with a rounded inset() isn't reliably compositor-only
+ * across browsers — animating it on 5 elements at once, simultaneously with
+ * transform+opacity, was the cause of a visible stutter partway through the
+ * sequence. It was also near-invisible here anyway: cards are opacity:0 at
+ * scale .15 (entrance) or fading through opacity:0 at scale .1 (exit)
+ * whenever the clip-path differs most from the resting inset(0), and
+ * border-radius + overflow:hidden already gives the same rounded-corner
+ * look at rest. Dropped entirely — transform/opacity only, so the whole
+ * animation stays on the compositor thread. will-change hints below give
+ * the browser a chance to promote the layer before the transition starts,
+ * instead of doing it (with a jank frame) partway through.
  */
 .welcome-frame {
   position: absolute;
@@ -204,10 +218,9 @@ button {
   box-shadow: 0 26px 60px rgba(0, 0, 0, .55);
   opacity: 0;
   transform: rotate(0deg) scale(.15);
-  clip-path: inset(45% round clamp(20px, 2.2vw, 32px));
-  transition: transform 1.5s cubic-bezier(.22, 1, .36, 1),
-    opacity 1.5s cubic-bezier(.22, 1, .36, 1),
-    clip-path 1.5s cubic-bezier(.22, 1, .36, 1);
+  will-change: transform, opacity;
+  transition: transform 1.3s cubic-bezier(.22, 1, .36, 1),
+    opacity 1.3s cubic-bezier(.22, 1, .36, 1);
 }
 .welcome-frame img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -217,19 +230,17 @@ button {
 .wf4 img { object-position: 50% 45%; filter: grayscale(.28) brightness(.86); }
 .wf5 img { object-position: 50% 45%; filter: grayscale(.28) brightness(.72); }
 
-.wf1.is-in { transform: rotate(-10deg) scale(1); opacity: .8; clip-path: inset(0% round clamp(10px, 1.1vw, 16px)); }
-.wf2.is-in { transform: rotate(-5deg) scale(1); opacity: .8; clip-path: inset(0% round clamp(10px, 1.1vw, 16px)); }
-.wf3.is-in { transform: rotate(0deg) scale(1); opacity: .8; clip-path: inset(0% round clamp(10px, 1.1vw, 16px)); }
-.wf4.is-in { transform: rotate(5deg) scale(1); opacity: .8; clip-path: inset(0% round clamp(10px, 1.1vw, 16px)); }
-.wf5.is-in { transform: rotate(10deg) scale(1); opacity: .8; clip-path: inset(0% round clamp(10px, 1.1vw, 16px)); }
+.wf1.is-in { transform: rotate(-10deg) scale(1); opacity: .8; }
+.wf2.is-in { transform: rotate(-5deg) scale(1); opacity: .8; }
+.wf3.is-in { transform: rotate(0deg) scale(1); opacity: .8; }
+.wf4.is-in { transform: rotate(5deg) scale(1); opacity: .8; }
+.wf5.is-in { transform: rotate(10deg) scale(1); opacity: .8; }
 
 .welcome-frame.is-receding {
   transform: rotate(0deg) scale(.1);
   opacity: 0;
-  clip-path: inset(50% round clamp(20px, 2.2vw, 32px));
-  transition: transform 1.1s cubic-bezier(.83, 0, .17, 1),
-    opacity 1.1s cubic-bezier(.83, 0, .17, 1),
-    clip-path 1.1s cubic-bezier(.83, 0, .17, 1);
+  transition: transform .95s cubic-bezier(.83, 0, .17, 1),
+    opacity .95s cubic-bezier(.83, 0, .17, 1);
 }
 
 /*
