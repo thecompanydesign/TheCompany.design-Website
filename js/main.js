@@ -1,6 +1,17 @@
 (function () {
   'use strict';
 
+  // As early as physically possible (before any other script logic, layout
+  // read, or timer): stop the browser from restoring a prior scroll
+  // position on reload/back-forward navigation, and force it to 0 in case
+  // one was already applied before this script ran (the page is always
+  // meant to restart from the welcome screen at the top, never resume
+  // mid-scroll). history.scrollRestoration alone only prevents *future*
+  // auto-restoration in this session — it doesn't undo one that already
+  // happened, hence the explicit scrollTo as well.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
   var mobileMQ = window.matchMedia('(max-width: 700px)');
@@ -25,10 +36,8 @@
     // mis-measured on some mobile browsers) once the overlay clears. Lock
     // scroll for the duration (same pattern as the mobile menu, below) and
     // hard-reset to the top once the overlay stops blocking interaction.
-    // scrollRestoration:'manual' additionally stops the browser itself from
-    // restoring a prior non-zero scroll position under the overlay on
-    // reload/back-navigation.
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    // (scrollRestoration + the initial scrollTo(0,0) are handled at the very
+    // top of this file, before anything else runs.)
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
 
@@ -119,10 +128,15 @@
     // so this is where the scroll lock releases and the page is forced back
     // to the top, guaranteeing the hero (and nav) land fully in view
     // regardless of any scroll drift that happened while it was locked out.
+    // Order matters here: overflow:hidden makes the document unscrollable,
+    // so scrollTo(0,0) while still locked is a no-op — worse, browsers
+    // typically remember the pre-lock offset and snap back to it once
+    // overflow is restored, which would silently undo the reset if it ran
+    // first. Unlock, *then* scrollTo, so the reset actually takes hold.
     setTimeout(function () {
-      window.scrollTo(0, 0);
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
+      window.scrollTo(0, 0);
       document.body.classList.add('is-hero-ready');
     }, timeline.gate);
 
