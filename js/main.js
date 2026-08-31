@@ -9,8 +9,13 @@
   // mid-scroll). history.scrollRestoration alone only prevents *future*
   // auto-restoration in this session — it doesn't undo one that already
   // happened, hence the explicit scrollTo as well.
+  // behavior:'instant' is required, not optional: html{scroll-behavior:
+  // smooth} is set globally, so a plain scrollTo(0,0) would otherwise
+  // animate — invisible here since the opaque welcome overlay hasn't even
+  // painted yet, but see the matching call at the gate below, where the
+  // same omission caused a real, visible bug.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
@@ -133,10 +138,17 @@
     // typically remember the pre-lock offset and snap back to it once
     // overflow is restored, which would silently undo the reset if it ran
     // first. Unlock, *then* scrollTo, so the reset actually takes hold.
+    // behavior:'instant' matters here specifically: html{scroll-behavior:
+    // smooth} is global, so a plain scrollTo(0,0) animates — and this fires
+    // at the exact moment the overlay stops blocking the view, so any
+    // residual sub-pixel drift (mobile's dynamic toolbar/visual-viewport
+    // resizing as it loads is a known source) would show up as a visible
+    // "the hero scrolls itself upward" animation right as the page becomes
+    // visible, rather than the page simply appearing already settled.
     setTimeout(function () {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.body.classList.add('is-hero-ready');
     }, timeline.gate);
 
