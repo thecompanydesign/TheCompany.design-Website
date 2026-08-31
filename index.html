@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Earliest possible point in the page lifecycle to do this: before any
+     other markup, CSS, or script parses/runs, so the browser never gets a
+     chance to auto-restore a prior scroll position for reload/back-forward
+     navigation. js/main.js re-asserts this (belt-and-suspenders) and does
+     the rest of the reset/replay work once the DOM exists. -->
+<script>if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TheCompany.design</title>
 <meta name="description" content="TheCompany.design — a studio for websites, digital products and experiences.">

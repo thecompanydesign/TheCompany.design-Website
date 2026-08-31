@@ -155,6 +155,56 @@
     setTimeout(function () { welcome.classList.add('is-done'); }, timeline.remove);
   }
 
+  // Navigation-type note: a fresh link click ('navigate'), a normal or hard
+  // reload ('reload'), and a back/forward navigation that *isn't* served
+  // from bfcache ('back_forward') all re-run this entire script from
+  // scratch — window.__tcdWelcomeDone is undefined again, so the block
+  // above already replays the welcome sequence correctly with no extra
+  // handling needed. The one case that does NOT re-run any script is a
+  // back/forward navigation restored FROM bfcache: the browser resumes the
+  // exact in-memory page state (DOM, __tcdWelcomeDone, scroll position)
+  // from when the user left, so without the code below the welcome screen
+  // would silently never replay and the page could resume mid-scroll.
+  // pageshow's persisted flag is the standard way to detect this.
+  function resetWelcomeState() {
+    var welcome = document.getElementById('welcome');
+    var wordmark = document.getElementById('welcomeWordmark');
+    var frameIds = ['wf1', 'wf2', 'wf3', 'wf4', 'wf5'];
+
+    window.__tcdWelcomeDone = false;
+
+    welcome.classList.remove('is-exiting', 'is-done');
+    wordmark.classList.remove('is-in', 'is-out');
+    frameIds.forEach(function (id) {
+      document.getElementById(id).classList.remove('is-in', 'is-receding');
+    });
+    document.body.classList.remove('is-hero-ready');
+
+    // Defensive: the scroll lock is always released well before a sequence
+    // finishes in practice, but reset it explicitly rather than assume.
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+
+    // Also defensive: if the mobile menu was left open when the user
+    // navigated away, bfcache would resume it open (and its own scroll
+    // lock) too — closeMenu/mobileMenu are declared later in this file but
+    // fully hoisted (var + function declaration), so both are safe to
+    // reference here; by the time pageshow can actually fire, the whole
+    // script has already run once and mobileMenu holds its real value.
+    if (mobileMenu && mobileMenu.classList.contains('is-open')) {
+      closeMenu();
+    }
+  }
+
+  window.addEventListener('pageshow', function (event) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (event.persisted) {
+      resetWelcomeState();
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      runWelcome();
+    }
+  });
+
   /* ========================================================================
      Scroll-driven work (C1–C7, D) — coalesced to one run per animation frame
      ======================================================================== */
