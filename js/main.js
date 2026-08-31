@@ -15,6 +15,23 @@
     if (window.__tcdWelcomeDone) return;
     window.__tcdWelcomeDone = true;
 
+    // .welcome is position:fixed and visually covers the viewport, but that
+    // alone does not stop the real document underneath from scrolling — on
+    // mobile, a touch/swipe during the ~5.5s intro (an easy accidental or
+    // impatient gesture, since a screen tap is the primary input there)
+    // scrolls the actual page invisibly behind the opaque overlay, so the
+    // page lands mid-scroll (hero partly offscreen, nav included, since it
+    // renders relative to a viewport a stale scroll position can leave
+    // mis-measured on some mobile browsers) once the overlay clears. Lock
+    // scroll for the duration (same pattern as the mobile menu, below) and
+    // hard-reset to the top once the overlay stops blocking interaction.
+    // scrollRestoration:'manual' additionally stops the browser itself from
+    // restoring a prior non-zero scroll position under the overlay on
+    // reload/back-navigation.
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
     var welcome = document.getElementById('welcome');
     var wordmark = document.getElementById('welcomeWordmark');
     var frames = [
@@ -97,7 +114,15 @@
 
     setTimeout(function () { welcome.classList.add('is-exiting'); }, timeline.exit);
 
+    // gate fires the same moment is-exiting sets pointer-events:none on the
+    // overlay — i.e. the first moment the real page becomes interactive —
+    // so this is where the scroll lock releases and the page is forced back
+    // to the top, guaranteeing the hero (and nav) land fully in view
+    // regardless of any scroll drift that happened while it was locked out.
     setTimeout(function () {
+      window.scrollTo(0, 0);
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
       document.body.classList.add('is-hero-ready');
     }, timeline.gate);
 

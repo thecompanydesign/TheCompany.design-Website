@@ -144,6 +144,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Belt-and-suspenders alongside the JS scroll lock in main.js: iOS Safari
+     can still let a touch-drag scroll the real document underneath a fixed
+     full-viewport overlay even with overflow:hidden on html/body. */
+  touch-action: none;
   /* Matches the card-exit easing (cubic-bezier(.83,0,.17,1), see the
      .welcome-frame comment above) rather than the site-wide ease-out-expo
      token, so the overlay fade and the collapsing cards it's fading out
