@@ -628,9 +628,20 @@ body.is-hero-ready .hero-meta { opacity: 1; }
   background: var(--accent);
   animation: hair 2.8s var(--ease-rail) infinite;
 }
+/*
+ * translateY(±100%) here is relative to the bar's OWN height (40% of the
+ * 40px track = 16px), not the track's — so the old ±100% only ever moved
+ * it 16px total, well short of the 40px track, making it look like it
+ * stalls around the middle instead of reaching the bottom. Fixed distances
+ * below travel the bar's full own height (16px) above the track to its
+ * full own height below the track's far edge (40px), i.e. the complete
+ * trackHeight + barHeight span, so it enters fully hidden above and exits
+ * fully hidden below before the loop restarts. Tied to the 40px/40% values
+ * above — update both together if either changes.
+ */
 @keyframes hair {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0% { transform: translateY(-16px); }
+  100% { transform: translateY(40px); }
 }
 
 /* ==========================================================================
