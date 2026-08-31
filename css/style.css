@@ -200,19 +200,22 @@ button {
  * 6 cards at roughly 5° steps (-12… 12); adapted to our 5 frames at
  * 5° steps (-10… 10) to keep the same symmetric-fan feel.
  *
- * Deliberate deviation from the source: the reference also animates
- * clipPath (inset(45%→0%) in, inset(0%→50%) out) alongside scale/opacity/
- * rotation. clip-path with a rounded inset() isn't reliably compositor-only
- * across browsers — animating it on 5 elements at once, simultaneously with
- * transform+opacity, was the cause of a visible stutter partway through the
- * sequence. It was also near-invisible here anyway: cards are opacity:0 at
- * scale .15 (entrance) or fading through opacity:0 at scale .1 (exit)
- * whenever the clip-path differs most from the resting inset(0), and
- * border-radius + overflow:hidden already gives the same rounded-corner
- * look at rest. Dropped entirely — transform/opacity only, so the whole
- * animation stays on the compositor thread. will-change hints below give
- * the browser a chance to promote the layer before the transition starts,
- * instead of doing it (with a jank frame) partway through.
+ * The reference also animates clipPath (inset(45%→0%) in, inset(0%→50%)
+ * out) alongside scale/opacity/rotation — this is NOT decorative detail:
+ * the exit's inset(50%) is a zero-area clip (50%+50% consumes the whole
+ * box), a real "iris closing" collapse, and the entrance's 45%→0% adds a
+ * progressive unfurling reveal on top of the scale-up that pure scaling
+ * alone doesn't produce. A prior pass dropped this entirely to fix a real
+ * stutter (animating a *rounded* clip-path — round() forces path
+ * rasterization — on 5 elements at once, alongside transform+opacity, isn't
+ * reliably compositor-only) but that reasoning wrongly treated the
+ * animated *reveal* as equivalent to just its start/end snapshots, and
+ * visibly flattened the effect into a plain zoom. Restored below, minus
+ * round(): border-radius + overflow:hidden already gives real rounded
+ * corners at every moment regardless of the clip-path's own corners, so
+ * dropping round() from the *animated* clip shape (plain axis-aligned
+ * inset(), far cheaper to rasterize) loses no visible roundedness while
+ * keeping the actual performance fix.
  */
 .welcome-frame {
   position: absolute;
@@ -222,9 +225,11 @@ button {
   box-shadow: 0 26px 60px rgba(0, 0, 0, .55);
   opacity: 0;
   transform: rotate(0deg) scale(.15);
-  will-change: transform, opacity;
+  clip-path: inset(45%);
+  will-change: transform, opacity, clip-path;
   transition: transform 1.3s cubic-bezier(.22, 1, .36, 1),
-    opacity 1.3s cubic-bezier(.22, 1, .36, 1);
+    opacity 1.3s cubic-bezier(.22, 1, .36, 1),
+    clip-path 1.3s cubic-bezier(.22, 1, .36, 1);
 }
 .welcome-frame img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -234,17 +239,19 @@ button {
 .wf4 img { object-position: 50% 45%; filter: grayscale(.28) brightness(.86); }
 .wf5 img { object-position: 50% 45%; filter: grayscale(.28) brightness(.72); }
 
-.wf1.is-in { transform: rotate(-10deg) scale(1); opacity: .8; }
-.wf2.is-in { transform: rotate(-5deg) scale(1); opacity: .8; }
-.wf3.is-in { transform: rotate(0deg) scale(1); opacity: .8; }
-.wf4.is-in { transform: rotate(5deg) scale(1); opacity: .8; }
-.wf5.is-in { transform: rotate(10deg) scale(1); opacity: .8; }
+.wf1.is-in { transform: rotate(-10deg) scale(1); opacity: .8; clip-path: inset(0%); }
+.wf2.is-in { transform: rotate(-5deg) scale(1); opacity: .8; clip-path: inset(0%); }
+.wf3.is-in { transform: rotate(0deg) scale(1); opacity: .8; clip-path: inset(0%); }
+.wf4.is-in { transform: rotate(5deg) scale(1); opacity: .8; clip-path: inset(0%); }
+.wf5.is-in { transform: rotate(10deg) scale(1); opacity: .8; clip-path: inset(0%); }
 
 .welcome-frame.is-receding {
   transform: rotate(0deg) scale(.1);
   opacity: 0;
+  clip-path: inset(50%);
   transition: transform .95s cubic-bezier(.83, 0, .17, 1),
-    opacity .95s cubic-bezier(.83, 0, .17, 1);
+    opacity .95s cubic-bezier(.83, 0, .17, 1),
+    clip-path .95s cubic-bezier(.83, 0, .17, 1);
 }
 
 /*
