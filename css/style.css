@@ -370,12 +370,28 @@ button {
   align-items: center;
 }
 /* uploads/thecompany-design-logo.png is the icon-only mark, 344x281
-   (~1.22:1); height-constrained so it scales down for the tighter mobile
-   nav-pill below. */
-.wordmark img {
+   (~1.22:1); rendered as a mask over background-color (not an <img>) so the
+   click color-flash below can animate a real background-color transition
+   instead of an approximate CSS filter. Height-constrained so it scales
+   down for the tighter mobile nav-pill below. */
+.logo-mark {
   display: block;
   height: 34px;
   width: auto;
+  aspect-ratio: 344 / 281;
+  background-color: var(--ink);
+  -webkit-mask-image: url("../uploads/thecompany-design-logo.png");
+  mask-image: url("../uploads/thecompany-design-logo.png");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  transition: background-color .35s ease;
+}
+.logo-mark.is-flash {
+  background-color: var(--accent);
 }
 
 .nav-links {
@@ -1010,7 +1026,7 @@ body.is-hero-ready .hero-meta { opacity: 1; }
   .site-header { padding: 12px 14px; }
   .nav-pill { padding: 7px 14px; align-items: center; }
   .wordmark { padding: 0; align-items: center; }
-  .wordmark img { height: 26px; }
+  .logo-mark { height: 26px; }
   .nav-links, .cta-pill--nav { display: none; }
   .menu-button { display: flex; }
 

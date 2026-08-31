@@ -462,6 +462,24 @@
   }
 
   /* ========================================================================
+     Nav logo click color-flash
+     ======================================================================== */
+
+  var wordmarkLink = document.getElementById('wordmarkLink');
+  var logoMark = wordmarkLink ? wordmarkLink.querySelector('.logo-mark') : null;
+  if (wordmarkLink && logoMark) {
+    var logoFlashTimer = null;
+    wordmarkLink.addEventListener('click', function () {
+      if (logoFlashTimer) clearTimeout(logoFlashTimer);
+      logoMark.classList.add('is-flash');
+      logoFlashTimer = setTimeout(function () {
+        logoMark.classList.remove('is-flash');
+        logoFlashTimer = null;
+      }, 350);
+    });
+  }
+
+  /* ========================================================================
      Magnetic final CTA pill (desktop only)
      ======================================================================== */
 
