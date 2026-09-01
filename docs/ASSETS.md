@@ -43,6 +43,13 @@ Frame 5 is darkest on purpose: the wordmark reads over it.
 - Still outstanding: AVIF and responsive `srcset` at ~800 / 1200 / 1800 / 2400px widths (currently
   single-size WebP only).
 
+### Nav logo / favicon
+
+| File | Purpose |
+|---|---|
+| `uploads/thecompany-design-logo.png` | Nav-bar mark (icon only, 344×281, white on transparent). Rendered via CSS `mask-image` over `background-color` so the click color-flash can animate a real color transition. |
+| `uploads/favicon.ico` (16/32/48), `uploads/favicon-16x16.png`, `uploads/favicon-32x32.png`, `uploads/favicon-48x48.png`, `uploads/apple-touch-icon.png` (180×180) | Favicon set generated from the same mark, composited onto a `#0B0B0C` (`--bg`) square plaque — the transparent original disappears in light browser chrome, so it needed an opaque backing to stay legible at tab-icon size. |
+
 ---
 
 ## Non-image assets
