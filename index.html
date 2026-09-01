@@ -2,12 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- Earliest possible point in the page lifecycle to do this: before any
-     other markup, CSS, or script parses/runs, so the browser never gets a
-     chance to auto-restore a prior scroll position for reload/back-forward
-     navigation. js/main.js re-asserts this (belt-and-suspenders) and does
-     the rest of the reset/replay work once the DOM exists. -->
-<script>if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }</script>
+<!-- Earliest possible point in the page lifecycle to do both of these:
+     before any other markup, CSS, or script parses/runs, and critically
+     before <body> exists at all, so no element a URL fragment could target
+     (#work, #top, #capabilities, #studio, #contact — every nav link and
+     work cover tile on this page produces one of these in the address bar
+     during normal use) has been parsed yet. That ordering matters: strip
+     the hash here and the browser's native "scroll to the element matching
+     location.hash" behavior never has a target to act on in the first
+     place. This is a *separate* mechanism from history.scrollRestoration
+     (which only governs restoring a previous scroll offset on reload/
+     back-forward) and from anything js/main.js does later — no amount of
+     scrollTo(0,0) after the fact stops the browser from performing its own
+     native fragment-scroll once the target element shows up in the DOM, so
+     it has to be cut off before that element exists, not corrected after.
+     A stray hash reaches a "fresh" load whenever someone re-opens, shares,
+     or has a device restore a URL that was copied from the address bar
+     after an in-page nav link or work-cover tap set one. -->
+<script>
+  if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
+  if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TheCompany.design</title>
 <meta name="description" content="TheCompany.design — a studio for websites, digital products and experiences.">
