@@ -161,13 +161,16 @@ Micro-labels (uppercase):
 
 - Nav pill past 60vh: `0 18px 50px -30px rgba(0,0,0,0.9)`; `none` before.
 - Welcome frames 1–5: `0 26px 60px rgba(0,0,0,0.55)`.
-- Backdrop filters: nav pill `blur(20px) saturate(150%)`; mobile menu `blur(22px)`;
-  mobile CTA bar `blur(16px)` (all with `-webkit-` duplicates). The nav pill's values are
-  pulled into `--nav-blur-radius`/`--nav-blur-saturate` custom properties in `style.css` —
-  values unchanged from spec, but the nav pill is fixed/always-pinned (rule 9) so this is the
-  one backdrop-filter that repaints continuously for the whole page; the properties exist so the
-  radius can be A/B'd live (DevTools, no stylesheet edit) if scroll performance ever forces a
-  trade-off against this measured value.
+- Backdrop filters: nav pill `blur(10px) saturate(150%)`; mobile menu `blur(22px)`;
+  mobile CTA bar `blur(16px)` (all with `-webkit-` duplicates).
+  **Deliberate, documented deviation:** the prototype's measured nav pill value was
+  `blur(20px) saturate(150%)`. The nav pill is fixed/always-pinned (rule 9), so it's the one
+  backdrop-filter that repaints continuously for the whole page on every scroll frame — a real,
+  site-wide performance cost. The radius is exposed as `--nav-blur-radius` (with
+  `--nav-blur-saturate`) in `style.css`; the user A/B'd `20px` vs `10px` live via DevTools,
+  confirmed `10px` feels noticeably smoother with no meaningful visual loss, and asked for it as
+  the shipped value. Saturate is unchanged at `150%` (no issue reported with it at the new
+  radius). If this is ever revisited, `20px` was the original measured/approved value.
 - Elevation order (z-index): welcome 90 → cursor 70 → grain 60 → header 52 → mobile menu 51 →
   mobile CTA bar 48 → work counter 45 → page content (auto).
 

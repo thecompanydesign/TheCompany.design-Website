@@ -17,13 +17,14 @@
   --ease-in-out: cubic-bezier(.4, 0, .6, 1);
   --ease-rail: cubic-bezier(.7, 0, .3, 1);
 
-  /* DESIGN_HANDOFF.md §3.5 measured value: blur(20px) saturate(150%). Kept
-     as-is by default — pulled out as custom properties purely so the cost
-     of this always-on, continuously-repainted backdrop-filter (the nav
-     pill is fixed and pinned for the whole page, per CLAUDE.md rule #9)
-     can be A/B'd live: open DevTools, edit --nav-blur-radius on :root
-     (try 10-12px) and scroll to compare feel, no stylesheet edit needed. */
-  --nav-blur-radius: 20px;
+  /* Deliberate, documented deviation from DESIGN_HANDOFF.md §3.5's measured
+     blur(20px) saturate(150%): the nav pill is fixed/pinned for the whole
+     page (CLAUDE.md rule #9), so this backdrop-filter repaints continuously
+     on every scroll frame site-wide. User A/B'd 20px vs 10px live via
+     DevTools and confirmed 10px feels noticeably smoother, so it's now the
+     shipped value — saturate left at the spec's 150%, no reported issue
+     with it. See DESIGN_HANDOFF.md §3.5 for the full note. */
+  --nav-blur-radius: 10px;
   --nav-blur-saturate: 150%;
 }
 
