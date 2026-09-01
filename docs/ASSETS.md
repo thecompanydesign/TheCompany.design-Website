@@ -35,10 +35,13 @@ Frame 5 is darkest on purpose: the wordmark reads over it.
 ### Loading strategy
 
 - Welcome frames: `<link rel="preload" as="image" href="uploads/…">` for all five, in `<head>`.
-- Work cover images: `loading="lazy"`.
+- Work cover images: served as WebP (converted from the source PNGs, `object-fit`/
+  `object-position`/`filter` unchanged). Cover 01 (Mkopo) loads eagerly with `decoding="async"`
+  since it sits immediately below the hero and was a source of scroll-in jank when it was lazy;
+  covers 02–04 keep `loading="lazy" decoding="async"`.
 - All decorative images carry `alt=""`.
-- Production: convert to AVIF/WebP with `srcset` at ~800 / 1200 / 1800 / 2400px widths and keep
-  the documented `object-fit`, `object-position` and `filter` values unchanged.
+- Still outstanding: AVIF and responsive `srcset` at ~800 / 1200 / 1800 / 2400px widths (currently
+  single-size WebP only).
 
 ---
 

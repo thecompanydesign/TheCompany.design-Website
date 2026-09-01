@@ -713,6 +713,11 @@ body.is-hero-ready .hero-meta { opacity: 1; }
   object-position: 50% 44%;
   filter: grayscale(.3) contrast(1.05) brightness(.84);
   transition: filter 1s var(--ease-out-expo);
+  /* pre-promote to its own compositor layer so the JS-driven scroll
+     parallax (translate3d, written every frame) doesn't force a layer
+     promotion the first time it runs, right as the hero hands off to
+     the work section. */
+  will-change: transform;
 }
 @media (hover: hover) and (pointer: fine) {
   .work-cover:hover .work-cover-img img {
