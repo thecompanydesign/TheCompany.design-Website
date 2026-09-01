@@ -150,9 +150,52 @@
       document.body.style.overflow = '';
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.body.classList.add('is-hero-ready');
+      guardAgainstLateScrollDrift();
     }, timeline.gate);
 
     setTimeout(function () { welcome.classList.add('is-done'); }, timeline.remove);
+  }
+
+  // Covers a gap the gate's own scrollTo(0,0) above can't: on a genuinely
+  // fresh, never-cached load (first-time open, not a reload — reloads and
+  // bfcache restores serve fonts/images from cache and don't hit this),
+  // the web fonts (Bodoni Moda at the hero's huge clamp() display sizes —
+  // even a small per-character metric delta between the fallback and the
+  // swapped-in font is amplified into a real pixel shift there) and the
+  // hero/welcome images can still be mid-download well past the ~5s
+  // welcome window on a slow first connection. Any of them settling
+  // *after* the gate's reset re-triggers the exact "lands mid-scroll,
+  // nav offscreen" symptom the gate exists to prevent, just later. Correct
+  // for it — but only while nothing the user did could have legitimately
+  // moved the scroll position, so this never fights a real scroll gesture.
+  function guardAgainstLateScrollDrift() {
+    var userInteracted = false;
+    var stop = function () {
+      userInteracted = true;
+      window.removeEventListener('touchstart', stop);
+      window.removeEventListener('wheel', stop);
+      window.removeEventListener('keydown', stop);
+    };
+    window.addEventListener('touchstart', stop, { passive: true });
+    window.addEventListener('wheel', stop, { passive: true });
+    window.addEventListener('keydown', stop);
+
+    var recheck = function () {
+      if (!userInteracted && (window.scrollY || window.pageYOffset)) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+    };
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(recheck);
+    }
+    window.addEventListener('load', recheck);
+    // Also covers late image decode / mobile toolbar settling that isn't
+    // tied to either event above. Each trigger fires at most once, so
+    // there's no unbounded loop here — the touchstart/wheel/keydown
+    // listeners just stay armed (self-removing on first fire) for as long
+    // as any of these four still could.
+    setTimeout(recheck, 400);
+    setTimeout(recheck, 1200);
   }
 
   // Navigation-type note: a fresh link click ('navigate'), a normal or hard

@@ -34,6 +34,12 @@ html {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
+  /* The browser's own scroll-anchoring can nudge scrollY on a late layout
+     shift (e.g. a web font swapping in at the hero's huge clamp() display
+     sizes) to "preserve" what's visually in view — exactly the kind of
+     silent, unrequested scroll this page works hard elsewhere to prevent
+     (js/main.js guardAgainstLateScrollDrift). Opt out globally. */
+  overflow-anchor: none;
 }
 
 body {
