@@ -88,7 +88,14 @@ Four sibling `<a href="#work">` covers, each:
 
 - **Fixed counter** (`[data-workindex]`): `position: fixed; left: clamp(18px,4vw,56px); bottom: 30px`
   (mobile `left: 22px; bottom: 88px`), monospace 10px, accent index + `/ 04 — Work`.
-  Opacity 1 only while a cover crosses the viewport midpoint.
+  Opacity 1 while a cover straddles the viewport midpoint, for covers 01-03 (their "exit" is the
+  next cover's entrance, so the symmetric midpoint check is what makes that handoff seamless).
+  **Deviation:** cover 04 (no next cover to hand off to) uses a tighter exit — it clears once its
+  bottom edge retreats past ~95% of viewport height instead of 50%, so the counter disappears
+  as the approach section starts showing through rather than staying up until it's already half
+  visible underneath. Widening this same tighter threshold to covers 01-03 would open a gap
+  between covers where neither straddle-check is true, flickering the counter off at every
+  transition — so it's cover-04-only.
 
 ## 03 — Approach  (`#approach`, label "03 Approach")
 

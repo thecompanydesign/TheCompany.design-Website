@@ -336,7 +336,8 @@
     // section as a whole so scrolling anywhere else on the page (hero,
     // approach, capabilities, studio, final CTA) skips this block
     // entirely instead of reading/writing all 4 covers every frame.
-    if (workSection && isNear(workSection.getBoundingClientRect(), vhNow)) {
+    var workSectionRect = workSection && workSection.getBoundingClientRect();
+    if (workSectionRect && isNear(workSectionRect, vhNow)) {
       var counterVisible = false;
       covers.forEach(function (cover, i) {
         var rect = cover.getBoundingClientRect();
@@ -352,8 +353,20 @@
           if (im) im.style.transform = 'none';
         }
 
-        // C5 — counter visible only while a cover straddles the viewport midpoint
-        if (rect.top < vhNow * 0.5 && rect.bottom > vhNow * 0.5) {
+        // C5 — counter visible while a cover straddles the viewport
+        // midpoint (entrance, and each cover-to-cover handoff, unchanged).
+        // The exit edge is tightened only for the *last* cover: with the
+        // original symmetric 0.5/0.5 midpoint check, the counter stayed
+        // visible until cover 04 was scrolled fully half off-screen — i.e.
+        // while the approach section already filled the other half of the
+        // viewport underneath it. Covers 1-3 keep 0.5 here since their
+        // "exit" is another cover's entrance (removing the buffer there
+        // would open a gap where neither straddle-check is true and the
+        // counter would flicker off between every cover, not just at the
+        // end) — only cover 4 has no next cover to hand off to.
+        var isLastCover = i === covers.length - 1;
+        var exitFrac = isLastCover ? 0.95 : 0.5;
+        if (rect.top < vhNow * 0.5 && rect.bottom > vhNow * exitFrac) {
           counterVisible = true;
           if (workCounterIndex) workCounterIndex.textContent = String(cover.dataset.index).padStart(2, '0');
         }
