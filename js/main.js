@@ -230,6 +230,7 @@
   var covers = Array.prototype.slice.call(document.querySelectorAll('[data-cover]'));
   var parallaxImgs = covers.map(function (c) { return c.querySelector('[data-parallax-img]'); });
   var parallaxCleared = false;
+  var workSection = document.getElementById('work');
 
   var approachSection = document.querySelector('.approach');
   var approachWords = Array.prototype.slice.call(document.querySelectorAll('.aw'));
@@ -243,12 +244,26 @@
 
   var heroType = document.querySelector('[data-hero-type]');
 
+  // D reveals: getBoundingClientRect is real (if cheap) work run on every
+  // scroll frame for the life of the page. Each target is a one-shot
+  // reveal (the class is only ever added, never removed), so once it
+  // fires we drop the element and stop paying for it.
   var studioInner = document.querySelector('[data-reveal-studio]');
   var finalH2 = document.querySelector('[data-reveal-final]');
   var revealRows = Array.prototype.slice.call(document.querySelectorAll('[data-reveal-row]'));
 
   var capabilityList = document.getElementById('capabilityList');
   var capabilityRows = Array.prototype.slice.call(document.querySelectorAll('[data-capability-row]'));
+
+  // Generous off-screen margin (in viewport heights) used to gate whole
+  // per-frame blocks of work for sections nowhere near the viewport —
+  // avoids reading/writing several elements every single scroll frame
+  // for the entire life of a long page when only one section's worth of
+  // that work can ever be visible at a time.
+  var NEAR_MARGIN = 1.5;
+  function isNear(rect, vhNow) {
+    return rect.bottom > -vhNow * NEAR_MARGIN && rect.top < vhNow * (1 + NEAR_MARGIN);
+  }
 
   function onScroll() {
     var vhNow = vh();
@@ -266,68 +281,89 @@
       navHeader.classList.toggle('is-past', scrollY > vhNow * 0.6);
     }
 
-    // C6 — mobile CTA bar
-    if (mobileCtaBar && finalCta) {
+    // C6 — mobile CTA bar (mobile-only surface; skip entirely on desktop)
+    if (mobileMQ.matches && mobileCtaBar && finalCta) {
       var finalTop = finalCta.getBoundingClientRect().top;
       var show = scrollY > vhNow * 0.9 && finalTop >= vhNow * 0.75;
       var menuOpen = mobileMenu && mobileMenu.classList.contains('is-open');
       mobileCtaBar.classList.toggle('is-visible', !!show && !menuOpen);
     }
 
-    // Work covers: C2 parallax, C5 counter, D reveals
-    var counterVisible = false;
-    covers.forEach(function (cover, i) {
-      var rect = cover.getBoundingClientRect();
-      var mid = rect.top + rect.height / 2;
+    // Work covers: C2 parallax, C5 counter, D reveals — gated on the
+    // section as a whole so scrolling anywhere else on the page (hero,
+    // approach, capabilities, studio, final CTA) skips this block
+    // entirely instead of reading/writing all 4 covers every frame.
+    if (workSection && isNear(workSection.getBoundingClientRect(), vhNow)) {
+      var counterVisible = false;
+      covers.forEach(function (cover, i) {
+        var rect = cover.getBoundingClientRect();
+        var mid = rect.top + rect.height / 2;
 
-      var noParallax = isTouch || mobileMQ.matches || reduceMotion;
-      if (!noParallax) {
-        var offset = (mid - vhNow / 2) * -0.08;
-        var img = parallaxImgs[i];
-        if (img) img.style.transform = 'translate3d(0, ' + offset + 'px, 0)';
-      } else if (!parallaxCleared) {
-        var im = parallaxImgs[i];
-        if (im) im.style.transform = 'none';
-      }
+        var noParallax = isTouch || mobileMQ.matches || reduceMotion;
+        if (!noParallax) {
+          var offset = (mid - vhNow / 2) * -0.08;
+          var img = parallaxImgs[i];
+          if (img) img.style.transform = 'translate3d(0, ' + offset + 'px, 0)';
+        } else if (!parallaxCleared) {
+          var im = parallaxImgs[i];
+          if (im) im.style.transform = 'none';
+        }
 
-      // C5 — counter visible only while a cover straddles the viewport midpoint
-      if (rect.top < vhNow * 0.5 && rect.bottom > vhNow * 0.5) {
-        counterVisible = true;
-        if (workCounterIndex) workCounterIndex.textContent = String(cover.dataset.index).padStart(2, '0');
-      }
+        // C5 — counter visible only while a cover straddles the viewport midpoint
+        if (rect.top < vhNow * 0.5 && rect.bottom > vhNow * 0.5) {
+          counterVisible = true;
+          if (workCounterIndex) workCounterIndex.textContent = String(cover.dataset.index).padStart(2, '0');
+        }
 
-      if (rect.top < vhNow * 0.88) cover.classList.add('title-in');
-      if (rect.top < vhNow * 0.90) cover.classList.add('content-in');
-    });
-    parallaxCleared = isTouch || mobileMQ.matches || reduceMotion;
-    if (workCounter) workCounter.classList.toggle('is-visible', counterVisible);
+        if (rect.top < vhNow * 0.88) cover.classList.add('title-in');
+        if (rect.top < vhNow * 0.90) cover.classList.add('content-in');
+      });
+      parallaxCleared = isTouch || mobileMQ.matches || reduceMotion;
+      if (workCounter) workCounter.classList.toggle('is-visible', counterVisible);
+    } else if (workCounter) {
+      workCounter.classList.remove('is-visible');
+    }
 
     // C3 — approach words
     if (approachSection && approachWords.length) {
       var arect = approachSection.getBoundingClientRect();
-      var prog = (vhNow * 0.85 - arect.top) / (arect.height * 0.55);
-      prog = Math.min(Math.max(prog, 0), 1);
-      var n = approachWords.length;
-      approachWords.forEach(function (word, i) {
-        var threshold = i / n;
-        var op = prog > threshold + 0.04 ? 1 : (prog > threshold ? 0.5 : 0.12);
-        word.style.opacity = String(op);
-      });
+      if (isNear(arect, vhNow)) {
+        var prog = (vhNow * 0.85 - arect.top) / (arect.height * 0.55);
+        prog = Math.min(Math.max(prog, 0), 1);
+        var n = approachWords.length;
+        approachWords.forEach(function (word, i) {
+          var threshold = i / n;
+          var op = prog > threshold + 0.04 ? 1 : (prog > threshold ? 0.5 : 0.12);
+          word.style.opacity = String(op);
+        });
+      }
     }
 
     // D — studio block, final CTA headline, capability row entrances
     if (studioInner) {
       var srect = studioInner.getBoundingClientRect();
-      if (srect.top < vhNow * 0.9) studioInner.classList.add('is-revealed');
+      if (srect.top < vhNow * 0.9) {
+        studioInner.classList.add('is-revealed');
+        studioInner = null;
+      }
     }
     if (finalH2) {
       var frect = finalH2.getBoundingClientRect();
-      if (frect.top < vhNow * 0.88) finalH2.classList.add('is-revealed');
+      if (frect.top < vhNow * 0.88) {
+        finalH2.classList.add('is-revealed');
+        finalH2 = null;
+      }
     }
-    revealRows.forEach(function (row) {
-      var rrect = row.getBoundingClientRect();
-      if (rrect.top < vhNow * 0.9) row.classList.add('is-revealed');
-    });
+    if (revealRows.length) {
+      revealRows = revealRows.filter(function (row) {
+        var rrect = row.getBoundingClientRect();
+        if (rrect.top < vhNow * 0.9) {
+          row.classList.add('is-revealed');
+          return false;
+        }
+        return true;
+      });
+    }
 
     // C7 — mobile capability activation by scroll proximity (≤700px only)
     if (mobileMQ.matches && capabilityRows.length) {
